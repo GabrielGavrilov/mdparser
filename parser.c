@@ -42,11 +42,11 @@ void parse_newline(Parser* parser)
     }
 }
 
-char* parse_text(Parser* parser)
+char* parse_text(Parser* parser, TokenType* stop_token)
 {
     char* temp = "";
 
-    while(parser->peek_token.type != TOKEN_NEWLINE)
+    while(parser->peek_token.type != stop_token)
     {
         cat(&parser->curr_token.value, " ");
         cat(&temp, parser->curr_token.value);
@@ -59,12 +59,12 @@ char* parse_text(Parser* parser)
     return temp;
 }
 
-Node* parse_literal(Parser* parser)
+Node* create_literal(Parser* parser, char* value)
 {
     Node* node = (Node*)malloc(sizeof(Node));
     
     node->literal.type = LITERAL;
-    node->literal.value = parse_text(parser);
+    node->literal.value = value;
 
     return node;
 }
@@ -84,13 +84,48 @@ Node* parse_unary(Parser* parser)
 
     if(check_parser(parser, TOKEN_TEXT))
     {
-        node = create_unary(parser, PARAGRAPH, parse_literal(parser));
+        node = create_unary(
+            parser,
+            PARAGRAPH,
+            create_literal(parser, parse_text(parser, TOKEN_NEWLINE))
+            );
     }
 
     if(check_parser(parser, TOKEN_HASHTAG))
     {
         advance_parser(parser);
-        node = create_unary(parser, HEADING, parse_literal(parser));
+        if(check_parser(parser, TOKEN_HASHTAG))
+        {
+            advance_parser(parser);
+            if(check_parser(parser, TOKEN_HASHTAG))
+            {
+                advance_parser(parser);
+                node = create_unary(parser, HEADING_3, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+            }
+            else
+                node = create_unary(parser, HEADING_2, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+        }
+        else
+            node = create_unary(parser, HEADING_1, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+    }
+
+    if(check_parser(parser, TOKEN_ASTERISK))
+    {
+        advance_parser(parser);
+        
+        if(check_parser(parser, TOKEN_ASTERISK))
+        {
+            advance_parser(parser);
+            node = create_unary(parser, BOLD, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
+            advance_parser(parser);
+            advance_parser(parser);
+        }
+
+        else
+        {
+            node = create_unary(parser, ITALIC, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
+            advance_parser(parser);
+        }
     }
 
     parse_newline(parser);

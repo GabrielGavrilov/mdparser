@@ -7,8 +7,16 @@ typedef union Node Node;
 
 typedef enum
 {
-    HEADING = 100,
-    PARAGRAPH = 101
+    HEADING_1,
+    HEADING_2,
+    HEADING_3,
+    HEADING_4,
+
+    ITALIC,
+    BOLD,
+
+    PARAGRAPH
+
 } HtmlBlockType;
 
 typedef enum 

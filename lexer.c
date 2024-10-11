@@ -79,6 +79,12 @@ Token get_next_token(Lexer* lexer)
     else if(lexer->curr_char == '#')
         token = create_token("#", TOKEN_HASHTAG);
 
+    else if(lexer->curr_char == '*')
+        token = create_token("*", TOKEN_ASTERISK);
+
+    else if(lexer->curr_char == '_')
+        token = create_token("_", TOKEN_UNDERSCORE);
+
     else if(isalnum(lexer->curr_char) || ispunct(lexer->curr_char))
         token = create_text_token(lexer);
 

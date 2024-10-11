@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {
 
-    const char* src = "# this is a heading\nthis is a paragraph";
+    const char* src = "# heading\n## heading two\n *This is an italic* \n**This is bold**\nParagraph!!";
 
     Lexer* lexer = init_lexer(src);
     Parser* parser = init_parser(lexer);

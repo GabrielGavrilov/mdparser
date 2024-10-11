@@ -7,6 +7,8 @@ typedef enum
     TOKEN_NEWLINE = 0,
 
     TOKEN_HASHTAG = 100,
+    TOKEN_ASTERISK = 101,
+    TOKEN_UNDERSCORE = 102,
 
     TOKEN_TEXT = 200
 } TokenType;
