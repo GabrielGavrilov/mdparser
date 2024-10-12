@@ -12,17 +12,19 @@ typedef enum
     HEADING_3,
     HEADING_4,
 
-    ITALIC,
-    BOLD,
+    PARAGRAPH,
 
-    PARAGRAPH
+    OPEN_UL,
+    CLOSED_UL,
+    LIST_ITEM
 
 } HtmlBlockType;
 
 typedef enum 
 {
     LITERAL,
-    UNARY
+    UNARY,
+    BINARY
 } NodeType;
 
 typedef struct
@@ -38,11 +40,19 @@ typedef struct
     Node* child;
 } UnaryNode;
 
+typedef struct 
+{
+    NodeType type;
+    Node* left;
+    Node* right;
+} BinaryNode;
+
 union Node
 {
     NodeType type;
     LiteralNode literal;
     UnaryNode unary;
+    BinaryNode binary;
 };
 
 #endif

@@ -4,6 +4,6 @@
 #include "mdp_node.h"
 #include "mdp_common.h"
 
-void node_to_html_block(Node* node);
+void node_to_html(Node* node);
 
 #endif

@@ -29,21 +29,60 @@ void translate_to_paragraph(Node* node, char** buffer)
 	cat(buffer, paragraph);
 }
 
-void node_to_html_block(Node* node)
+void translate_to_list_item(Node* node, char** buffer)
 {
-	char* buffer = (char*)malloc(4096);
+	char* value = node->unary.child->literal.value;
+	int list_item_size = strlen(value) + 7 + 2;
+	char* list_item = (char*)malloc(list_item_size + 1);
 
+	snprintf(list_item, list_item_size + 1, "<li>%s</li>", value);
+
+	cat(buffer, list_item);
+}
+
+void translate_unary(Node* node, char** buffer)
+{
 	switch(node->unary.block)
 	{
 		case HEADING_1:
 		case HEADING_2:
 		case HEADING_3:
 		case HEADING_4:
-			translate_to_header(node, &buffer);
+			translate_to_header(node, buffer);
 			break;
 		case PARAGRAPH:
-			translate_to_paragraph(node, &buffer);
+			translate_to_paragraph(node, buffer);
 			break;
+		case OPEN_UL:
+			cat(buffer, "<ul>\n");
+			break;
+		case LIST_ITEM:
+			translate_to_list_item(node, buffer);
+			break;
+		case CLOSED_UL:
+			cat(buffer, "</ul>\n");
+			break;
+	}
+}
+
+void translate_binary(Node* node, char** buffer)
+{
+	translate_unary(node->binary.left, buffer);
+	translate_unary(node->binary.right, buffer);
+}
+
+void node_to_html(Node* node)
+{
+	char* buffer = (char*)malloc(4096);
+
+	if(node->unary.type == 1)
+	{
+		translate_unary(node, &buffer);
+	}
+
+	if(node->binary.type == 2)
+	{
+		translate_binary(node, &buffer);
 	}
 
 	printf("%s\n", buffer);

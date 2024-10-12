@@ -8,11 +8,18 @@
 #include "mdp_common.h"
 #include "mdp_translater.h"
 
+typedef enum
+{
+    NONE,
+    UL
+} ParserFlag;
+
 typedef struct
 {
     Lexer* lexer;
     Token curr_token;
     Token peek_token;
+    ParserFlag flag;
 } Parser;
 
 Parser* init_parser(Lexer* lexer);

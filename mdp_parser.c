@@ -4,6 +4,7 @@ Parser* init_parser(Lexer* lexer)
 {
     Parser* parser = (Parser*)malloc(sizeof(Parser));
     parser->lexer = lexer;
+    parser->flag = NONE;
 
     advance_parser(parser);
     advance_parser(parser);
@@ -59,7 +60,7 @@ char* parse_text(Parser* parser, TokenType* stop_token)
     return temp;
 }
 
-Node* create_literal(Parser* parser, char* value)
+Node* create_literal(char* value)
 {
     Node* node = (Node*)malloc(sizeof(Node));
     
@@ -69,12 +70,26 @@ Node* create_literal(Parser* parser, char* value)
     return node;
 }
 
-Node* create_unary(Parser* parser, HtmlBlockType block, Node* child)
+Node* create_unary(HtmlBlockType block, Node* child)
 {
     Node* node = (Node*)malloc(sizeof(Node));
+
+    node->type = UNARY;
     node->unary.type = UNARY;
     node->unary.block = block;
     node->unary.child = child;
+    
+    return node;
+}
+
+Node* create_binary(Node* left, Node* right)
+{
+    Node* node = (Node*)malloc(sizeof(Node));
+
+    node->type = BINARY;
+    node->binary.left = left;
+    node->binary.right = right;
+
     return node;
 }
 
@@ -84,7 +99,7 @@ Node* parse_unary(Parser* parser)
 
     if(check_parser(parser, TOKEN_TEXT))
     {
-        node = create_unary(parser, PARAGRAPH, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+        node = create_unary(PARAGRAPH, create_literal( parse_text(parser, TOKEN_NEWLINE)));
     }
 
     if(check_parser(parser, TOKEN_HASHTAG))
@@ -102,45 +117,60 @@ Node* parse_unary(Parser* parser)
                                 (level == 2) ? HEADING_2 :
                                 (level == 3) ? HEADING_3 : HEADING_4;
 
-        node = create_unary(parser, heading, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+        node = create_unary(heading, create_literal(parse_text(parser, TOKEN_NEWLINE)));
     }
+
+    return node;
+}
+
+Node* parse_binary(Parser* parser)
+{
+    Node* node = parse_unary(parser);
 
     if(check_parser(parser, TOKEN_ASTERISK))
     {
         advance_parser(parser);
-        int level = 1;
-
-        while(check_parser(parser, TOKEN_ASTERISK) && level < 2)
+        if(parser->flag != UL)
         {
-            advance_parser(parser);
-            level++;
+            parser->flag = UL;
+            node = create_binary(
+                create_unary(OPEN_UL, create_literal(NULL)),
+                create_unary(LIST_ITEM, create_literal(parse_text(parser, TOKEN_NEWLINE)))
+            );
         }
-
-
-        HtmlBlockType block = (level == 1) ? ITALIC : BOLD;
-        node = create_unary(parser, block, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
-
-        switch(level)
+        else
         {
-            case 2:
-                advance_parser(parser);
-            default:
-                advance_parser(parser);
-                break;
+            char* list_item_text = parse_text(parser, TOKEN_NEWLINE);
+
+            if(check_peek_parser(parser, TOKEN_ASTERISK))
+            {
+                node = create_unary(LIST_ITEM, create_literal(list_item_text));
+            }
+            else
+            {
+                parser->flag = NONE;
+                node = create_binary(
+                    create_unary(LIST_ITEM, create_literal(parse_text(parser, TOKEN_NEWLINE))),
+                    create_unary(CLOSED_UL, create_literal(NULL))
+                );
+            }
         }
+    }
+
+    if(check_parser(parser, TOKEN_NEWLINE) && check_peek_parser(parser, TOKEN_NEWLINE))
+    {
+        node = create_unary(CLOSED_UL, create_literal(NULL));
     }
 
     parse_newline(parser);
     return node;
 }
 
-
 void parse_to_html(Parser* parser)
 {
-
     while(parser->curr_token.type != TOKEN_EOF)
     {   
-        Node* node = parse_unary(parser);
-        node_to_html_block(node);
+        Node* node = parse_binary(parser);
+        node_to_html(node);
     }
 }
