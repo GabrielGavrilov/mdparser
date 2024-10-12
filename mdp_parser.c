@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "mdp_parser.h"
 
 Parser* init_parser(Lexer* lexer)
 {
@@ -84,47 +84,49 @@ Node* parse_unary(Parser* parser)
 
     if(check_parser(parser, TOKEN_TEXT))
     {
-        node = create_unary(
-            parser,
-            PARAGRAPH,
-            create_literal(parser, parse_text(parser, TOKEN_NEWLINE))
-            );
+        node = create_unary(parser, PARAGRAPH, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
     }
 
     if(check_parser(parser, TOKEN_HASHTAG))
     {
         advance_parser(parser);
-        if(check_parser(parser, TOKEN_HASHTAG))
+        int level = 1;
+
+        while(check_parser(parser, TOKEN_HASHTAG) && level < 4)
         {
             advance_parser(parser);
-            if(check_parser(parser, TOKEN_HASHTAG))
-            {
-                advance_parser(parser);
-                node = create_unary(parser, HEADING_3, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
-            }
-            else
-                node = create_unary(parser, HEADING_2, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+            level++;
         }
-        else
-            node = create_unary(parser, HEADING_1, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
+
+        HtmlBlockType heading = (level == 1) ? HEADING_1 :
+                                (level == 2) ? HEADING_2 :
+                                (level == 3) ? HEADING_3 : HEADING_4;
+
+        node = create_unary(parser, heading, create_literal(parser, parse_text(parser, TOKEN_NEWLINE)));
     }
 
     if(check_parser(parser, TOKEN_ASTERISK))
     {
         advance_parser(parser);
-        
-        if(check_parser(parser, TOKEN_ASTERISK))
+        int level = 1;
+
+        while(check_parser(parser, TOKEN_ASTERISK) && level < 2)
         {
             advance_parser(parser);
-            node = create_unary(parser, BOLD, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
-            advance_parser(parser);
-            advance_parser(parser);
+            level++;
         }
 
-        else
+
+        HtmlBlockType block = (level == 1) ? ITALIC : BOLD;
+        node = create_unary(parser, block, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
+
+        switch(level)
         {
-            node = create_unary(parser, ITALIC, create_literal(parser, parse_text(parser, TOKEN_ASTERISK)));
-            advance_parser(parser);
+            case 2:
+                advance_parser(parser);
+            default:
+                advance_parser(parser);
+                break;
         }
     }
 
@@ -139,10 +141,6 @@ void parse_to_html(Parser* parser)
     while(parser->curr_token.type != TOKEN_EOF)
     {   
         Node* node = parse_unary(parser);
-        printf("(%d, %d, (%d, %s)\n",
-            node->unary.type, 
-            node->unary.block, 
-            node->unary.child->literal.type,
-            node->unary.child->literal.value);
+        node_to_html_block(node);
     }
 }

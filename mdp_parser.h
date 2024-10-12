@@ -1,11 +1,12 @@
-#ifndef __PARSER_H__
-#define __PARSER_H__
+#ifndef __MDP_PARSER_H__
+#define __MDP_PARSER_H__
 
 #include "mdparser.h"
-#include "lexer.h"
-#include "tokens.h"
-#include "node.h"
-#include "stringlib.h"
+#include "mdp_lexer.h"
+#include "mdp_tokens.h"
+#include "mdp_node.h"
+#include "mdp_common.h"
+#include "mdp_translater.h"
 
 typedef struct
 {

@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "mdp_lexer.h"
 
 Lexer* init_lexer(const char* src)
 {

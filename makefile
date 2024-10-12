@@ -1,5 +1,5 @@
 CC = gcc
-FILES = mdparser.c lexer.c parser.c stringlib.c
+FILES = mdparser.c mdp_lexer.c mdp_parser.c mdp_translater.c mdp_common.c
 CFLAGS = -w
 TARGET = mdparser
 

@@ -7,7 +7,7 @@ typedef union Node Node;
 
 typedef enum
 {
-    HEADING_1,
+    HEADING_1 = 1,
     HEADING_2,
     HEADING_3,
     HEADING_4,

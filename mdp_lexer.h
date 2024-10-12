@@ -1,9 +1,9 @@
-#ifndef __LEXER_H__
-#define __LEXER_H__
+#ifndef __MDP_LEXER_H__
+#define __MDP_LEXER_H__
 
 #include "mdparser.h"
-#include "tokens.h"
-#include "stringlib.h"
+#include "mdp_tokens.h"
+#include "mdp_common.h"
 
 typedef struct
 {

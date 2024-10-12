@@ -1,4 +1,4 @@
-#include "stringlib.h"
+#include "mdp_common.h"
 
 char* substr(char* str, int start, int end)
 {
@@ -65,4 +65,44 @@ void cat(char** first_str, char* second_str)
     *(catstr+size + 1) = 0;
 
     *first_str = catstr;
+}
+
+int get_file_length(FILE* file)
+{
+    int length = 0;
+
+    fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    return length;
+}
+
+MDPFile* open_file(char* name)
+{
+    MDPFile* file = (MDPFile*)malloc(sizeof(MDPFile));
+    FILE* fptr;
+    
+    fptr = fopen(name, "rb");
+
+    if(!fptr)
+        fptr = fopen(name, "wb");
+
+    int length = get_file_length(fptr);
+    
+    char* buffer = (char*)malloc(length * sizeof(char) + 1);
+    fread(buffer, sizeof(char), length, fptr);
+    buffer[length] = 0;
+
+    file->fileptr = fptr;
+    file->size = length;
+    file->buffer = buffer;
+
+    return file; 
+}
+
+void write_to_file(MDPFile* file, char* buffer)
+{
+    fwrite(buffer, strlen(buffer), sizeof(char), file->fileptr);
+    fclose(file->fileptr);
 }

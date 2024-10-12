@@ -1,5 +1,5 @@
-#ifndef __TOKENS_H__
-#define __TOKENS_H__
+#ifndef __MDP_TOKENS_H__
+#define __MDP_TOKENS_H__
 
 typedef enum 
 {

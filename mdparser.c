@@ -1,13 +1,12 @@
 #include "mdparser.h"
-
-#include "parser.h"
+#include "mdp_parser.h"
 
 int main(int argc, char** argv)
 {
 
-    const char* src = "# heading\n## heading two\n *This is an italic* \n**This is bold**\nParagraph!!";
+    MDPFile* source = open_file(argv[1]);
 
-    Lexer* lexer = init_lexer(src);
+    Lexer* lexer = init_lexer(source->buffer);
     Parser* parser = init_parser(lexer);
 
     parse_to_html(parser);
