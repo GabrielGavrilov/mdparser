@@ -1,6 +1,11 @@
-* one
-* two
-* three
-* four
+# heading 1
+### heading 3
+#### heading 4
 
-This is a paragraph!
+Things I like:
+
+* cats
+* dogs
+* food
+
+Hey! That's pretty cool!

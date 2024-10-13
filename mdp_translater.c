@@ -13,7 +13,12 @@ void translate_to_header(Node* node, char** buffer)
 				(heading_block == 3) ? 3 : 4;
 
 	sprintf(s_level, "%d", level);
+	printf("%s :: %s\n", s_level, value);
+
+
 	snprintf(heading, heading_size + 1, "<h%s>%s</h%s>", s_level, value, s_level);
+
+	printf("%s\n", heading);
 
 	cat(buffer, heading);
 }
@@ -35,7 +40,7 @@ void translate_to_list_item(Node* node, char** buffer)
 	int list_item_size = strlen(value) + 7 + 2;
 	char* list_item = (char*)malloc(list_item_size + 1);
 
-	snprintf(list_item, list_item_size + 1, "<li>%s</li>", value);
+	snprintf(list_item, list_item_size + 2, "\t<li>%s</li>", value);
 
 	cat(buffer, list_item);
 }
@@ -60,7 +65,7 @@ void translate_unary(Node* node, char** buffer)
 			translate_to_list_item(node, buffer);
 			break;
 		case CLOSED_UL:
-			cat(buffer, "</ul>\n");
+			cat(buffer, "\n</ul>");
 			break;
 	}
 }

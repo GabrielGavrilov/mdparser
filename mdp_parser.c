@@ -150,16 +150,11 @@ Node* parse_binary(Parser* parser)
             {
                 parser->flag = NONE;
                 node = create_binary(
-                    create_unary(LIST_ITEM, create_literal(parse_text(parser, TOKEN_NEWLINE))),
+                    create_unary(LIST_ITEM, create_literal(list_item_text)),
                     create_unary(CLOSED_UL, create_literal(NULL))
                 );
             }
         }
-    }
-
-    if(check_parser(parser, TOKEN_NEWLINE) && check_peek_parser(parser, TOKEN_NEWLINE))
-    {
-        node = create_unary(CLOSED_UL, create_literal(NULL));
     }
 
     parse_newline(parser);
