@@ -62,8 +62,7 @@ void cat(char** first_str, char* second_str)
     memcpy(catstr, *first_str, strlen(*first_str));
     memcpy(catstr + strlen(*first_str), second_str, strlen(second_str));
 
-    *(catstr+size + 1) = 0;
-
+    *(catstr + size + 1) = 0;
     *first_str = catstr;
 }
 

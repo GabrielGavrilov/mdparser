@@ -13,12 +13,7 @@ void translate_to_header(Node* node, char** buffer)
 				(heading_block == 3) ? 3 : 4;
 
 	sprintf(s_level, "%d", level);
-	printf("%s :: %s\n", s_level, value);
-
-
 	snprintf(heading, heading_size + 1, "<h%s>%s</h%s>", s_level, value, s_level);
-
-	printf("%s\n", heading);
 
 	cat(buffer, heading);
 }
